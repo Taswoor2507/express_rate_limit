@@ -67,6 +67,16 @@ const globalRateLimit = rateLimit({
 // implement rate limit middleware 
 app.use(globalRateLimit);
 
+
+// url json middleware
+app.use(express.json());
+
+
+// url encoded middleware
+app.use(express.urlencoded());
+
+
+
 // routing implement 
 app.use("/api/v1/users" , userRouter);
 
