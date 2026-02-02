@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from "cors";
 import userRouter from './routes/user.route.js';
 import rateLimit from 'express-rate-limit';
+import ErrorMiddleware from './middlewares/ErrorMiddleware.js';
 //  configure dotenv
 dotenv.config();
 // create express app
@@ -81,5 +82,7 @@ app.use(express.urlencoded());
 app.use("/api/v1/users" , userRouter);
 
 
+//error middleware
+app.use(ErrorMiddleware)
 
 export default app    //powerful / modify {}

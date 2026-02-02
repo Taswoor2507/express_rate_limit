@@ -1,21 +1,27 @@
+import CustomError from "../handlers/CustomError.js";
 
-const getAllUsers = (req,res,next)=>{
-   res.json({message:"Get all users api hit....."})
+function getUsers(req,res,next){
+   let  value = 0 ;
+    if(value>0){
+        res.staus(200).json(
+            {
+                message:"Get all users api hit succesfully"
+            }
+        )
+    }else{
+        next(new CustomError(400 , "NO user found ..."))
+    }
 }
 
 
-const getUserData = (req,res,next)=>{
-    const userId =  req.params.userId;
-    res.json({message:`get user  ${userId}  profile data`})
-}
+export {getUsers};
 
 
-const searchUser = (req,res, next)=>{
-    const country = req.query.country;
-     const city = req.query.city;
-
-     res.json({message:`serch user from country ${country}  and city ${city}`})
-}
 
 
-export {getAllUsers , getUserData , searchUser};
+
+// 1xx  
+// 2xx 200, 201,
+// 3Xx 
+// 4xx  cleint 400 , 401 , 404
+// 500 
