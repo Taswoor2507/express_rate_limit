@@ -1,4 +1,5 @@
 import CustomError from "../handlers/CustomError.js";
+import User from "../models/user.model.js";
 
 function getUsers(req,res,next){
    let  value = 0 ;
@@ -13,8 +14,56 @@ function getUsers(req,res,next){
     }
 }
 
+// @controller
+// @register user 
+//    1 db 
+//    2 async
+//    get form data form req.body
+//    check 
+//     duplicte user 
+//     save
+//res user
+//  {fname:"dasd" , email:"dsf" , password:"dasda" , gender:""}
+const registerUser = async (req,res,next)=>{
+   let {firstName , email , password , gender} = req.body;
+   //check
+   if(!firstName || !email || !password || !gender){
+      return next(new CustomError(400 ,  "All fields are required"))
+   }
+//    check 2 
+  const genderValues = ["male", "female" , "other"]
+     if(!genderValues.includes(gender)){
+        return next(new CustomError(400 , "Gender must be male , female or other "))
+     }
 
-export {getUsers};
+  //  check duplication
+  const userExist = await User.findOne({email:email});
+    if(userExist){
+        return next(new CustomError(400 ,"Email already in use "));
+    }
+
+    // store in db
+
+    const user = await  User.create({firstName , email , password , gender});
+    if(!user){
+        return next(new CustomError(500  ,  "Failed to register user"))
+    } 
+
+    res.status(201).json({
+        message:"User Register successfully",
+        user
+    })
+
+
+
+}
+
+
+
+
+
+
+export {getUsers, registerUser};
 
 
 
