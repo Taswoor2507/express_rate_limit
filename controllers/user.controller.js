@@ -1,3 +1,5 @@
+import { success } from "zod";
+import AsyncHanlder from "../handlers/AsyncHandler.js";
 import CustomError from "../handlers/CustomError.js";
 import User from "../models/user.model.js";
 
@@ -24,40 +26,56 @@ function getUsers(req,res,next){
 //     save
 //res user
 //  {fname:"dasd" , email:"dsf" , password:"dasda" , gender:""}
-const registerUser = async (req,res,next)=>{
-   let {firstName , email , password , gender} = req.body;
-   //check
-   if(!firstName || !email || !password || !gender){
-      return next(new CustomError(400 ,  "All fields are required"))
-   }
-//    check 2 
-  const genderValues = ["male", "female" , "other"]
-     if(!genderValues.includes(gender)){
-        return next(new CustomError(400 , "Gender must be male , female or other "))
+// const registerUser = async (req,res,next)=>{
+
+
+ 
+
+//   //  check duplication
+//   const userExist = await User.findOne({email:email});
+//     if(userExist){
+//         return next(new CustomError(400 ,"Email already in use "));
+//     }
+
+//     // store in db
+
+//     const user = await  User.create({firstName , email , password , gender});
+//     if(!user){
+//         return next(new CustomError(500  ,  "Failed to register user"))
+//     } 
+
+//     res.status(201).json({
+//         message:"User Register successfully",
+//         user
+//     })
+
+
+
+// }
+
+
+const registerUser = AsyncHanlder(async(req,res,next)=>{
+//   validation field check 
+    const {email , firstName , password ,  gender} = req.body
+// cehck user already exist or not 
+     const userExist =  await User.findOne({email});
+     if(userExist){
+        return next(new CustomError(400 , "User already exist"))
+     } 
+     
+     const user  =  await User.create({
+        firstName , email , password , gender 
+     })
+
+     if(!user){
+         return next(new CustomError(500 ,  "Failed to create user "))
      }
 
-  //  check duplication
-  const userExist = await User.findOne({email:email});
-    if(userExist){
-        return next(new CustomError(400 ,"Email already in use "));
-    }
-
-    // store in db
-
-    const user = await  User.create({firstName , email , password , gender});
-    if(!user){
-        return next(new CustomError(500  ,  "Failed to register user"))
-    } 
-
-    res.status(201).json({
-        message:"User Register successfully",
-        user
-    })
-
-
-
-}
-
+     res.status(201).json({
+        success:true,
+       user
+     })
+})
 
 
 
