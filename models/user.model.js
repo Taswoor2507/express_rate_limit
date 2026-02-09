@@ -25,7 +25,15 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:["male" , "female" , "other"] , 
         required:true
-    }
+    },
+    refreshToken:[
+        {
+            token:{
+                type:String,
+                createdAt:Date,
+            }
+        }
+    ]
 } , {timestamps:true})
 
 
@@ -42,6 +50,15 @@ userSchema.pre("save" , async function () {
 })
 
 
+// comapre pasword custom method 
+userSchema.methods.comparePassword =  async function(password){
+     const isCorrect =  await bcrypt.compare(password , this.password) ;
+     return isCorrect;
+}
+
+// comparepassord(pass@123) -> bool true /false
+
+
 
 // compare password 
 userSchema.methods.comparePassword = async function(password){
@@ -55,3 +72,4 @@ userSchema.methods.comparePassword = async function(password){
 
 const User = mongoose.model("User" , userSchema);
 export default User;
+// [{token:"dsafsfsdfdsf"},{},{}]

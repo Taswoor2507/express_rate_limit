@@ -1,9 +1,11 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from "cors";
-import authRouter from './routes/auth.routes.js';
 import rateLimit from 'express-rate-limit';
 import ErrorMiddleware from './middlewares/ErrorMiddleware.js';
+import { authRouter } from './routes/auth.route.js';
+import cookieParser from 'cookie-parser';
+import { userRouter } from './routes/user.route.js';
 //  configure dotenv
 dotenv.config();
 // create express app
@@ -20,7 +22,7 @@ const corsOptions = (req, cb)=>{
    
     // FOR CLIENTS 
     if(!origin){
-        cb(null, {origin:true})
+        cb(null, {origin:true, credentials: true  , allowedHeaders: ['Content-Type', 'Authorization']})
     }
 
 
@@ -29,7 +31,9 @@ const corsOptions = (req, cb)=>{
     if(allowedOrigins.includes(origin)){
       return   cb(null , {
             origin:true,
-            methods:["GET" , "POST" , "PUT" , "PATCH" , "DELETE"]
+            methods:["GET" , "POST" , "PUT" , "PATCH" , "DELETE"],
+           credentials: true,
+           allowedHeaders: ['Content-Type', 'Authorization']
         })
     }
 
@@ -38,7 +42,9 @@ const corsOptions = (req, cb)=>{
     if(allowReadonlyOrigins.includes(origin)){
         return cb(null , {
             origin:true,
-            methods:["GET"]
+            methods:["GET"],
+            credentials: true,
+            allowedHeaders: ['Content-Type', 'Authorization']
         })
     }
 
@@ -76,7 +82,12 @@ app.use(express.json());
 // url encoded middleware
 app.use(express.urlencoded());
 
-
+// cookie parser 
+app.use(cookieParser());
+//auth router 
+app.use("/api/v1/auth" , authRouter)
+//user routes
+app.use("/api/v1/users" , userRouter)
 
 // auth routes 
 app.use("/api/v1/auth" , authRouter);
