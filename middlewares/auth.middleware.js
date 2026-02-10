@@ -5,7 +5,7 @@ import User from "../models/user.model.js";
 // header  =  Bearer <token>
 const authMiddleware = AsyncHanlder((async (req, res, next) => {
      const token  =  req.header("Authorization")?.replace("Bearer " , "");
-     console.log(token, ":tttt")
+    //  console.log(token, ":tttt")
     if (!token) {
         return next(new CustomError(401, "Token not found! you are unauthorized "))
     }
@@ -24,6 +24,7 @@ const authMiddleware = AsyncHanlder((async (req, res, next) => {
     }
 
     req.user =  user;
+    req.role = user.role;
     next();
 }))
 
