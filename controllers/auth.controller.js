@@ -1,7 +1,9 @@
+import jwt from "jsonwebtoken";
 import AsyncHanlder from "../handlers/AsyncHandler.js";
 import CustomError from "../handlers/CustomError.js";
 import User from "../models/user.model.js";
 import { generateAcccessToken , generateRefreshToken } from "../utils/generateTokens.js";
+import { CookieOptions } from "../utils/cookieOptions.js";
 
 // @controller 
 // register user 
@@ -74,9 +76,57 @@ const loginUser =  AsyncHanlder(async(req,res,next)=>{
 
 
 
+// @controller
+// refreh token 
+const refreshToken = AsyncHanlder(async(req,res,next)=>{
+   //  get refresh token form cookies 
+   const incomingRefreshToken = req.cookies.refreshToken;
+   if(!incomingRefreshToken){
+      return next(new CustomError(401 , "Unauthorized request"))
+   }
+
+   // verify
+  const decoded =jwt.verify(incomingRefreshToken , process.env.JWT_REFRESHTOKEN_SECRET)
+   // {userID:DSFSD , iat , xpire}
+  
+  if(!decoded.userId){
+    return next(new CustomError(401 , "TOKEN IS INVALID"))
+  }
+   //refreshtoken: [{token:"dasdadas"}]    
+  const isTokenExist = await User.findOne({"refreshToken.token" : incomingRefreshToken})
+   if(!isTokenExist){
+      return next(new CustomError(401 , "TOKEN IS INVALID"))
+   }
+
+    const newRefreshToken =   generateRefreshToken(isTokenExist) 
+    const newAccessToken = generateAcccessToken(isTokenExist)
+
+   //  UPDATE DB`
+      isTokenExist.refreshToken = [{token:newRefreshToken , createdAt:Date.now()}]
+      await isTokenExist.save({validateBeforeSave:false});
+
+   // update cookies 
+   res
+   .cookie("refreshToken" , newRefreshToken , CookieOptions)
+   .status(200)
+   .json({
+      success:true,
+      message:"Token refreshed successfully",
+      data:{
+         accessToken:newAccessToken
+      }
+   })
 
 
-export {registerUser, loginUser};
+
+
+
+})
+
+
+
+
+export {registerUser, loginUser, refreshToken};
 
 
 
