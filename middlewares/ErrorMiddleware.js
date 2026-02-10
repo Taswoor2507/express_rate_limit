@@ -1,5 +1,4 @@
 function ErrorMiddleware(err,req,res,next){
-    console.log("message frim error middleware ...")
    const message =  err.message;
    const  statusCode =  err.statusCode || 500 ;
   
