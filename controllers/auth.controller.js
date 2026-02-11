@@ -4,6 +4,8 @@ import CustomError from "../handlers/CustomError.js";
 import User from "../models/user.model.js";
 import { generateAcccessToken , generateRefreshToken } from "../utils/generateTokens.js";
 import { CookieOptions } from "../utils/cookieOptions.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { welcomeEmailTemplate } from "../emailTemplates/welcome.template.js";
 
 // @controller 
 // register user 
@@ -23,6 +25,9 @@ const registerUser = AsyncHanlder(async(req,res,next)=>{
      if(!user){
          return next(new CustomError(500 ,  "Failed to create user "))
      }
+
+    const welcomeTemplate = welcomeEmailTemplate(user.firstName, user.email)
+    await sendEmail(user.email , "WELCOME TO OUR APPLICATION", welcomeTemplate )
 
      res.status(201).json({
         success:true,
