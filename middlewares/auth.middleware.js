@@ -18,7 +18,7 @@ const authMiddleware = AsyncHanlder((async (req, res, next) => {
     }
 
     //  serch in d using id
-    const user = await User.findById(userId).select("-password -refreshToken");
+    const user = await User.findById(userId).select("+password -refreshToken");
     if (!user) {
         return next(new CustomError(404, "User not found"));
     }
