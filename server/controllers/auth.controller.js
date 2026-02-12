@@ -103,16 +103,11 @@ const refreshToken = AsyncHanlder(async(req,res,next)=>{
       return next(new CustomError(401 , "TOKEN IS INVALID"))
    }
 
-    const newRefreshToken =   generateRefreshToken(isTokenExist) 
     const newAccessToken = generateAcccessToken(isTokenExist)
 
-   //  UPDATE DB`
-      isTokenExist.refreshToken = [{token:newRefreshToken , createdAt:Date.now()}]
-      await isTokenExist.save({validateBeforeSave:false});
 
    // update cookies 
    res
-   .cookie("refreshToken" , newRefreshToken , CookieOptions)
    .status(200)
    .json({
       success:true,
