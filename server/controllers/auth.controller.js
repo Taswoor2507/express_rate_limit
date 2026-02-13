@@ -65,12 +65,8 @@ const loginUser = AsyncHanlder(async (req, res, next) => {
       .json({
          success: true,
          message: "User logged in successfully",
-         data: {
-            email: user.email,
-            firstName: user.firstName,
-            gender: user.gender,
-            accessToken
-         }
+         accessToken,
+         user
       })
 
 
