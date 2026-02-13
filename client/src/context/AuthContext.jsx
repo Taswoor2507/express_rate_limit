@@ -1,106 +1,97 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import { createContext } from "react";
+import {
+  createContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
+import {api} from "../api/axiosInstance"
 import { authApi } from "../api/authApi";
-import { useLayoutEffect } from "react";
-import { api } from "../api/axiosInstance";
-// reate context 
-const AuthContext = createContext();
 
-//create/setup provider
+export const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [accessToken, setAccessToken] = useState(undefined);
-    const isAuthenticated = accessToken ? true : false
+export const AuthProvider = ({ children }) => {
+  const [accessToken, setAccessToken] = useState(undefined);
+  const [user, setUser] = useState(null);
 
+  const isAuthenticated = accessToken ? true : false;
 
-    // restoresession
-    useEffect(() => {
-        async function session() {
-            try {
-                const res = await authApi.refreshToken();
-                setAccessToken(res.data.data.accessToken);
-                setUser(res.data.user);
-            } catch (error) {
-                 setAccessToken(null);
-                 setUser(null);
+  // 🔁 App reload → session restore
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const res = await authApi.refreshToken();
+        setAccessToken(res.data.accessToken);
+        setUser(res.data.user);
+      } catch {
+        setAccessToken(null);
+        setUser(null);
+      }
+    };
+
+    restoreSession();
+  }, []);
+
+  // 🔁 Request interceptor
+  useLayoutEffect(() => {
+    const reqInterceptor = api.interceptors.request.use(
+      (config) => {
+            if (accessToken && !config._retry) {
+              config.headers.Authorization = `Bearer ${accessToken}`;
             }
-        }
-        session();
-    }, [])
+            return config;
+          },
+      (err) => Promise.reject(err)
+    );
 
+    return () => api.interceptors.request.eject(reqInterceptor);
+  }, [accessToken]);
 
+  // 🔁 Response interceptor (AUTO REFRESH)
+  useLayoutEffect(() => {
+    const resInterceptor = api.interceptors.response.use(
+      (res) => res,
+      async (error) => {
+        const originalRequest = error.config;
 
+        if (
+          error.response?.status === 403 &&
+          !originalRequest._retry
+        ) {
+          originalRequest._retry = true;
 
-    // interceptors 
-    // request 
-    //response 
+          try {
+            const res = await authApi.refreshToken();
+            setAccessToken(res.data.accessToken);
+            setUser(resdata.user);
 
-    // request interceptor
-    useLayoutEffect(()=>{
-          const requestInterceptor = api.interceptors.request.use(
-            (config)=>{
-                   if(accessToken && !config._retry){
-                      config.headers.Authorization = `Bearer ${accessToken}`
-                   } 
-                   return api(config);
-            },
-            (error)=>{
-                return Promise.reject(error)
-            }
-          )
+            originalRequest.headers.Authorization =
+              `Bearer ${res.data.accessToken}`;
 
-          return ()=>{
-             return api.interceptors.request.eject(requestInterceptor)
+            return api(originalRequest);
+          } catch {
+            setAccessToken(null);
+            setUser(null);
           }
-    },[accessToken])
+        }
 
+        return Promise.reject(error);
+      }
+    );
 
+    return () => api.interceptors.response.eject(resInterceptor);
+  }, []);
 
-    //response interceptor 
-    useLayoutEffect(()=>{
-       const responseInterceptor = api.interceptors.response.use(
-        (res)=>{
-            return res
-        },
-         async (error)=>{
-            const failedRequest = error.config;  //reqobj
-            if(error.response.status === 401  ||  error.response.status === 403 && !failedRequest._retry){
-                failedRequest._retry = true;
-               try {
-                const  res=  await authApi.refreshToken(); ///aut/refreshtoken
-                failedRequest.headers.Authorization = `Bearer ${res.data.accessToken}`
-                setUser(res.data.user);
-                setAccessToken(res.data.accessToken);
-                return failedRequest
-               } catch (error) {
-                  setUser(null)
-                  setAccessToken(null)
-               }
-             
-            }
-
-            return Promise.reject(error);
-
-         }
-       ) 
-
-       return ()=>{
-          return api.interceptors.response.eject(responseInterceptor)
-       }
-    } , [accessToken])
-
-
-
-
-
-
-
-    return <AuthContext.Provider values={
-        { user, setUser, accessToken, setAccessToken, isAuthenticated }}>
-        {children}
+  return (
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        setAccessToken,
+        user,
+        setUser,
+        isAuthenticated,
+      }}
+    >
+      {children}
     </AuthContext.Provider>
-}
-
-export { AuthContext, AuthProvider };
+  );
+};
