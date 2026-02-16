@@ -120,8 +120,33 @@ const refreshToken = AsyncHanlder(async (req, res, next) => {
 
 
 
+// @controller
+// logout
+const logoutUser = AsyncHanlder(async (req, res, next) => {
+        const user = req.user;
+       
+        user.refreshToken = null
+        await user.save({ validateBeforeSave: false })
+        res.clearCookie("refreshToken" , {
+          httpOnly:true,
+          secure:false,
+          sameSite:"strict"
+        })
 
-export { registerUser, loginUser, refreshToken };
+
+        res.status(200).json({
+         success:true,
+         message:"User logged out successfully"
+        })
+
+
+
+})
+
+
+
+
+export { registerUser, loginUser, refreshToken ,  logoutUser};
 
 
 

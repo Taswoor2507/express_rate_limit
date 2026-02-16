@@ -9,6 +9,7 @@ function AuthProvider({ children }) {
 // accesstoken , user  , isAuthenticated
  const [accessToken , setAccessToken] = useState(null);
  const [user , setUser] = useState(undefined);
+ const [loading , setLoading] =  useState(true);
  let IsAuthenticated = accessToken ? true :false ;
 
 // request interceptor
@@ -75,9 +76,12 @@ useEffect(()=>{
           const res = await authApi.refreshToken();
           setUser(res.data.user);
           setAccessToken(res.data.accessToken); 
+          setLoading(false);
        } catch (error) {
             setUser(null);
             setAccessToken(null);
+       } finally{
+        setLoading(false)
        }
      }
 
@@ -88,7 +92,7 @@ useEffect(()=>{
 
 
 
-    return <AuthContext.Provider value={{IsAuthenticated , user , setUser , accessToken , setAccessToken}}>
+    return <AuthContext.Provider value={{IsAuthenticated , user , setUser , accessToken , setAccessToken, loading}}>
         {children}
     </AuthContext.Provider>
 }
