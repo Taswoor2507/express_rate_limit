@@ -146,7 +146,39 @@ const logoutUser = AsyncHanlder(async (req, res, next) => {
 
 
 
-export { registerUser, loginUser, refreshToken ,  logoutUser};
+// googleauthcallback 
+
+ const googleAuthCallback =  AsyncHanlder(async(req,res)=>{
+         try {
+             const user  = req.user
+
+            //  generate tokens 
+            const accessToken = generateAcccessToken(user);
+            const refreshToken = generateRefreshToken(user);
+
+            // store refresh toeken in db
+            user.refreshToken = [{token:refreshToken , createdAt:new Date()}];
+            await user.save();
+
+            // store refresjh token in cookies 
+
+            res.cookie("refreshToken" , refreshToken, CookieOptions);
+            
+            res.redirect(`http://localhost:5173/auth/success?accesstoken=${accessToken}`);
+
+         } catch (error) {
+            // this is error message  => %sdf$
+            res.redirect(`http://localhost:5173/auth/failure?error=${encodeURIComponent(error.message)}`)
+            
+         }
+ })
+
+
+
+
+
+
+export { registerUser, loginUser, refreshToken ,  logoutUser, googleAuthCallback};
 
 
 

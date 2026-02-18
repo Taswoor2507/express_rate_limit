@@ -17,8 +17,10 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        minLength: [8, "Password must be at least 8 chars "],
+        required: function(){
+            return this.provider === "local";
+        },
+        
         select: false
     },
     gender: {
@@ -46,13 +48,22 @@ const userSchema = new mongoose.Schema({
     forgetPasswordExpire:{
         type:Date,
         default:null
+    },
+    provider:{
+        type:String,
+        enum:["local" , "google"],
+        default:"local"
+    },
+    googleId:{
+        type:String,
+        default:null
     }
 }, { timestamps: true })
 
 
 // pre post 
 userSchema.pre("save", async function () {
-    if (!this.isModified("password")) {
+    if (!this.isModified("password") ||  this.provider !== "local") {
         return
     }
     try {

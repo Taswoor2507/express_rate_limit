@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
 import { userRouter } from './routes/user.route.js';
 import { adminRouter } from './routes/admin.route.js';
+import {passport} from "./config/passport.js"
 //  configure dotenv
 dotenv.config();
 // create express app
@@ -85,6 +86,10 @@ app.use(express.urlencoded());
 
 // cookie parser 
 app.use(cookieParser());
+
+
+// passport middleware 
+app.use(passport.initialize());
 
 // admin router
 app.use("/api/v1/admin" , adminRouter)

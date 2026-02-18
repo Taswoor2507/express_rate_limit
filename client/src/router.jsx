@@ -3,6 +3,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import GoogleAuth from "./pages/GoogleAuth";
 const router = createBrowserRouter([
     {
         path:'/register',
@@ -12,6 +13,14 @@ const router = createBrowserRouter([
         path:"/login",
         element:<Login/>
     } , 
+    {
+       path:"/auth/success",
+       element:<GoogleAuth/>
+    },
+    {
+       path:"/auth/failure",
+       element:<GoogleAuth/>
+    }, 
     {
         path:"dashboard",
         element:<ProtectedRoute/>,
