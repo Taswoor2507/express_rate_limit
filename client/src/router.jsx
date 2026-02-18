@@ -2,9 +2,14 @@ import { createBrowserRouter } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import GoogleAuth from "./pages/GoogleAuth";
 const router = createBrowserRouter([
+    {
+        path:'/',
+        element:<Home/>
+    },
     {
         path:'/register',
         element:<Register/>
@@ -32,6 +37,5 @@ const router = createBrowserRouter([
         ]
     }
 ])
-
 
 export {router};
