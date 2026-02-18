@@ -15,7 +15,7 @@ authRouter.route("/logout").get(authMiddleware, logoutUser)
 
 // google oauth
 // /api/v1/auth/google
-authRouter.route("/google").get(passport.authenticate("google" ,{scope:["profile" , "email"], prompt:"consent"}));
+authRouter.route("/google").get(passport.authenticate("google" ,{scope:["profile" , "email"]}));
 
 // api/v1/auth/google/callback
 authRouter.route("/google/callback").get(passport.authenticate("google" , { session:false , failureRedirect:"http://localhost:5173/auth/failure"}), googleAuthCallback)
