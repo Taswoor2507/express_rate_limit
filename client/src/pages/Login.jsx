@@ -16,7 +16,7 @@ function Login() {
     }
   }, [IsAuthenticated, navigate])
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting }, setError } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
     reValidateMode: "onBlur",
@@ -35,6 +35,29 @@ function Login() {
     } catch (error) {
       console.log(error?.message, "Server error")
       console.log(error, "rerroroo")
+      
+      // Handle server-side errors
+      if (error.response?.data?.message) {
+        setError("general", { 
+          type: "server", 
+          message: error.response.data.message 
+        })
+      } else if (error.response?.data?.error) {
+        setError("general", { 
+          type: "server", 
+          message: error.response.data.error 
+        })
+      } else if (error.message) {
+        setError("general", { 
+          type: "server", 
+          message: "Network error. Please try again." 
+        })
+      } else {
+        setError("general", { 
+          type: "server", 
+          message: "Login failed. Please check your credentials and try again." 
+        })
+      }
     }
   }
 
@@ -113,6 +136,13 @@ function Login() {
                 <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
               )}
             </div>
+
+            {/* Server Error Display */}
+            {errors.general && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {errors.general.message}
+              </div>
+            )}
 
             <button
               type="submit"
