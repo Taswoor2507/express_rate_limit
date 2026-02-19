@@ -111,10 +111,23 @@ const Dashboard = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.firstName}! 👋
-          </h2>
-          <p className="text-gray-600">Here's what's happening with your account today.</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back, {user?.firstName}! 👋
+              </h2>
+              <p className="text-gray-600">Here's what's happening with your account today.</p>
+            </div>
+            <button
+              onClick={() => navigate('/dashboard/create-post')}
+              className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-amber-600 transition duration-200 flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Create Post
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
