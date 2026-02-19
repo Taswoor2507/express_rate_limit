@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import { userRouter } from './routes/user.route.js';
 import { adminRouter } from './routes/admin.route.js';
 import {passport} from "./config/passport.js"
+import { postRouter } from './routes/post.route.js';
 //  configure dotenv
 dotenv.config();
 // create express app
@@ -103,7 +104,8 @@ app.use("/api/v1/users" , userRouter)
 app.use("/api/v1/auth" , authRouter);
 // routing implement 
 // app.use("/api/v1/users" , userRouter);
-
+// post routes
+app.use("/api/v1/posts" ,postRouter)
 
 //error middleware
 app.use(ErrorMiddleware)

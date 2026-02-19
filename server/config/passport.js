@@ -10,8 +10,6 @@ passport.use(new GoogleStrategy({
     callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:8080/api/v1/auth/google/callback",
     scope: ["profile", "email"]
 }, async (_, __, profile, done) => {
-
-
     try {
 
         // check user already exist or not 
