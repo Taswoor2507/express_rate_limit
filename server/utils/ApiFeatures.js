@@ -22,15 +22,15 @@ class ApiFeatures {
             console.log(baseField , "BBBBBBBBBBBBBBBB")  
             if (this.allowedFields.includes(baseField)) {
                 // Extract operator if present (e.g., "lt" from "price[lt]")
-                const operatorMatch = key.match(/\[(gt|gte|lt|lte)\]/);
-                
+                const operatorMatch = key.match(/\[(gt|gte|lt|lte)\]/); // this line return [ '[lt]', 'lt', index: 5, input: 'price[lt]', groups: undefined ] OOOOOOOOOOOOOOO
+                console.log(operatorMatch , "OOOOOOOOOOOOOOO")
                 if (operatorMatch) {
                     // Has operator: price[lt]=10 -> price: {$lt: "10"}
-                    const operator = `$${operatorMatch[1]}`;
+                    const operator = `$${operatorMatch[1]}`;  // lt -> $lt
                     if (!queryObj[baseField]) {
                         queryObj[baseField] = {};
                     }
-                    queryObj[baseField][operator] = Number(this.queryStr[key]);
+                    queryObj[baseField][operator] = Number(this.queryStr[key]); //{price:{$lt:10}}
                 } else {
                     // No operator: category=Sports
                     queryObj[baseField] = this.queryStr[key];
