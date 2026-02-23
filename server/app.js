@@ -10,6 +10,7 @@ import { adminRouter } from './routes/admin.route.js';
 import {passport} from "./config/passport.js"
 import { postRouter } from './routes/post.route.js';
 import { profileRouter } from './routes/profile.route.js';
+import { productRouter } from './routes/product.route.js';
 //  configure dotenv
 dotenv.config();
 // create express app
@@ -111,6 +112,9 @@ app.use("/api/v1/posts" ,postRouter)
 
 //profile routes
 app.use("/api/v1/profile" , profileRouter)
+
+//products routes
+app.use("/api/v1/products" , productRouter)
 //error middleware
 app.use(ErrorMiddleware)
 
