@@ -1,11 +1,12 @@
-// // /products?price[gt]=32&brand=apple&rating[gte]=4.5
-// const queryStr = {price:32 , brand:"apple" , rating:4.5};   //this.queryStr = req.query
-// const newObj= {};
+const fields = ["-price" , "category" , "-rating"];
+const allowFields = ["price" , "category" , "rating"];
 
-// for(let key in queryStr){
-//     // newObj[key] = queryStr[key]
-//     console.log(queryStr[key])
-// }
+const safeFields = fields.filter((field)=>{
+    return allowFields.includes(field.replace("-" , ""))   // -price   => "price"  =>["price" , "category" , "rating"] = truue
+})
 
-const value  =  "price[gt:32]"
-console.log(value.split('['))
+// ["-price" , "category" , "-rating"].join(" ") => String "-price category -rating"   
+// join
+
+console.log(safeFields.join(" "));
+
