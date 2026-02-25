@@ -6,6 +6,8 @@ import { generateAcccessToken, generateRefreshToken } from "../utils/generateTok
 import { CookieOptions } from "../utils/cookieOptions.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { welcomeEmailTemplate } from "../emailTemplates/welcome.template.js";
+import { eventBus } from "../events/EventBus.js";
+import { UserEvents } from "../events/event.constants.js";
 
 // @controller 
 // register user 
@@ -26,13 +28,18 @@ const registerUser = AsyncHanlder(async (req, res, next) => {
       return next(new CustomError(500, "Failed to create user "))
    }
 
-   const welcomeTemplate = welcomeEmailTemplate(user.firstName, user.email)
-   await sendEmail(user.email, "WELCOME TO OUR APPLICATION", welcomeTemplate)
+   // const welcomeTemplate = welcomeEmailTemplate(user.firstName, user.email)
+   // await sendEmail(user.email, "WELCOME TO OUR APPLICATION", welcomeTemplate)
 
    res.status(201).json({
+      message:`Welcome email send to ${user.email} succesfully..`,
       success: true,
       user
    })
+
+
+   eventBus.emit(UserEvents.REGISTER, user)
+
 })
 
 // login

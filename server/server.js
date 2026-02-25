@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import app from './app.js';
 import ConnectDB from './config/db.config.js';
+import "./events/index.js";
 const PORT = process.env.PORT || 7070;
 
 ConnectDB()
